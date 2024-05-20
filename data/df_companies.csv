@@ -1,0 +1,5 @@
+,company_code,company_name,market
+0,^AEX,Aex,AEX
+1,^IBEX,IBEX 35,IBEX35
+2,^FCHI,CAC 40,CAC40
+3,^GDAXI,DAX PERFORMANCE-INDEX,DAX40
