@@ -1,13 +1,7 @@
-altair
-matplotlib
-mplfinance
-numpy
-pandas
-pillow
-plotly
-psycopg2
-psycopg2-binary
 streamlit
-streamlit_folium
+pandas
+numpy
+matplotlib
+scikit-learn
 folium
 
