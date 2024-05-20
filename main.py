@@ -6,6 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from src.common import gen_candle_figs, calc_volatility, calc_volume_rollout
 import altair as alt
+import datetime
 
 st.set_page_config(layout="wide")
 
@@ -48,7 +49,6 @@ def create_volume_rollout_chart(df, title):
         fontSize=24
         )
     return chart
-
 
 
 
@@ -155,6 +155,57 @@ def main():
 
     df_3 = calc_volume_rollout(df, tickers[3])
     col22.altair_chart(create_volume_rollout_chart(df_3, f'Volumen medio de la última semana para {tickers[3]}'))
+
+
+    col1, col2 = st.columns(2)
+
+
+    # Selección de rango de fechas por parte del usuario dentro del rango 2007-2009
+    start_date = col1.date_input(
+        "Selecciona la fecha de inicio",
+        min_value=datetime.date(2007, 9, 3),
+        max_value=datetime.date(2008, 12, 31),
+        value=datetime.date(2008, 1, 1)
+    )
+
+    end_date = col2.date_input(
+        "Selecciona la fecha de fin",
+        min_value=datetime.date(2008, 1, 1),
+        max_value=datetime.date(2009, 6, 30),
+        value=datetime.date(2009, 1, 1)
+    )
+
+    # Asegurarse de que la fecha de inicio sea anterior o igual a la fecha de fin
+    if start_date > end_date:
+        st.error("La fecha de inicio debe ser anterior o igual a la fecha de fin.")
+    else:
+        # Convertir las fechas seleccionadas por el usuario a Timestamp
+        start_timestamp = pd.to_datetime(start_date)
+        end_timestamp = pd.to_datetime(end_date)
+
+        # Filtrar los datos para el rango de fechas seleccionado
+        df_filtered = df[(df['date'] >= str(start_date)) & (df['date'] <= str(end_date))]
+
+        # Agrupar por país para obtener el volumen total de transacciones en el rango de fechas seleccionado
+        volume_by_country = df_filtered[df_filtered['company_code'].isin(tickers)].groupby('country')['volume'].sum().reset_index()
+
+        # Crear un gráfico de barras con Altair
+        bar_chart = alt.Chart(volume_by_country).mark_bar().encode(
+            x=alt.X('country', sort='-y', title='País'),
+            y=alt.Y('volume', title=f'Volumen de Transacciones desde {start_date} hasta {end_date}'),
+            color='country'
+        ).properties(
+            title=f'Volumen de Transacciones desde {start_date} hasta {end_date} por País'
+        )
+
+        # Mostrar el gráfico de barras en la aplicación
+        st.altair_chart(bar_chart, use_container_width=True)
+
+
+
+
+
+
 
 
 
